@@ -1,16 +1,22 @@
+import logging, sys
+logging.disable(sys.maxsize)
+
 import json
-import sys
 import lucene
 import os
+import ast
 
 from org.apache.lucene.analysis.standard import StandardAnalyzer
 from org.apache.lucene.document import Document, Field, StringField, TextField
-from org.apache.lucene.index import IndexWriter, IndexWriterConfig
-from org.apache.lucene.store import SimpleFSDirectory
+from org.apache.lucene.index import FieldInfo, IndexWriter, IndexWriterConfig, IndexOptions, DirectoryReader
+from org.apache.lucene.store import MMapDirectory, SimpleFSDirectory, NIOFSDirectory
 from org.apache.lucene.util import Version
+from org.apache.lucene.queryparser.classic import QueryParser
+from org.apache.lucene.search import IndexSearcher, BoostQuery, Query
+from org.apache.lucene.search.similarities import BM25Similarity
 from java.nio.file import Paths
 
-def index_json_objects(input_dir, index_dir):
+def index(input_dir, index_dir):
     lucene.initVM()
     analyzer = StandardAnalyzer()
     config = IndexWriterConfig(analyzer)
@@ -38,7 +44,7 @@ def index_json_objects(input_dir, index_dir):
                 body = json_object.get('body', '')
                 #num_comments = json_object.get('numComments', '')
                 #comments = json_object.get('comments', '')
-                #score = json_object.get('score', '')
+                score = json_object.get('score', '')
                 #upvote_ratio = json_object.get('upvoteRatio', '')
 
                  # Create Lucene fields and add them to the document
@@ -54,11 +60,52 @@ def index_json_objects(input_dir, index_dir):
                 doc.add(TextField('body', body, Field.Store.YES))
                 #doc.add(StringField('numComments', num_comments, Field.Store.YES))
                 #doc.add(TextField('comments', comments, Field.Store.YES))
-                #doc.add(StringField('score', score, Field.Store.YES))
+                doc.add(StringField('score', score, Field.Store.YES))
                 #doc.add(StringField('upvoteRatio', upvote_ratio, Field.Store.YES))
                 writer.addDocument(doc)
 
     writer.commit()
     writer.close()
 
-index_json_objects('input', 'index')
+def retrieve(storedir, query):
+    searchDir = NIOFSDirectory(Paths.get(storedir))
+    searcher = IndexSearcher(DirectoryReader.open(searchDir))
+
+    parser = QueryParser('body', StandardAnalyzer())
+    parsed_query = parser.parse(query)
+    count = 0
+    list = []
+    topDocs = searcher.search(parsed_query, 1000).scoreDocs
+    topkdocs = []
+    for hit in topDocs:
+        if (hit.score in list):
+            continue
+        else:
+            list.append(hit.score)
+            count = count + 1
+        doc = searcher.doc(hit.doc)
+        topkdocs.append({
+            "BM25": hit.score,
+            "title": doc.get("title"),
+            #"subreddit": doc.get("subreddit"),
+            #"author": doc.get("author"),
+            "timestamp": doc.get("time"),
+            "permalink": doc.get("permalink"),
+            "score": doc.get("score")
+            #"text": doc.get("body")
+        })
+        if count == 10:
+            break
+
+    #print (topkdocs)
+    #print('Top 10 Documents: ')
+    #for i in range(len(topkdocs)):
+        #position = i + 1
+        #print(str(position) + ') ' + str(topkdocs[i]))
+    return topkdocs
+
+
+#index('input/', 'index')
+lucene.initVM(vmargs=['-Djava.awt.headless=true'])
+retrieve('index', 'gaming')
+
