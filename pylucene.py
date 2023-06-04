@@ -73,11 +73,11 @@ def retrieve(storedir, query):
         topkdocs.append({
             "score": hit.score,
             "title": doc.get("title"),
-            "subreddit": doc.get("subreddit"),
-            "author": doc.get("author"),
-            "timestamp": doc.get("time"),
-            "permalink": doc.get("permalink"),
-            "text": doc.get("body")
+            #"subreddit": doc.get("subreddit"),
+            #"author": doc.get("author"),
+            #"timestamp": doc.get("time"),
+            #"permalink": doc.get("permalink"),
+            #"text": doc.get("body")
         })
     
     print(topkdocs)
@@ -86,6 +86,7 @@ def retrieve(storedir, query):
 
 lucene.initVM(vmargs=['-Djava.awt.headless=true'])
 create_index('sample_lucene_index/', 'input/')
-retrieve('sample_lucene_index/', ' (title:programming)^1.0 (content:programming)^0.5')
+
+#retrieve('index', 'test')
 
 

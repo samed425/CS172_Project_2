@@ -45,6 +45,7 @@ def index(input_dir, index_dir):
                 #num_comments = json_object.get('numComments', '')
                 #comments = json_object.get('comments', '')
                 score = json_object.get('score', '')
+                upvote = json_object.get('upvoteRatio', '')
                 #upvote_ratio = json_object.get('upvoteRatio', '')
 
                  # Create Lucene fields and add them to the document
@@ -54,6 +55,7 @@ def index(input_dir, index_dir):
                 doc.add(StringField('author', author, Field.Store.YES))
                 doc.add(StringField('time', time, Field.Store.YES))
                 doc.add(StringField('permalink', permalink, Field.Store.YES))
+                doc.add(StringField('upvote', upvote, Field.Store.YES))
                 #doc.add(StringField('sublink', sublink, Field.Store.YES))
                 #doc.add(StringField('sublink-title', sublink_title, Field.Store.YES))
                 #doc.add(StringField('sublink-body', sublink_body, Field.Store.YES))
@@ -91,7 +93,7 @@ def retrieve(storedir, query):
             #"author": doc.get("author"),
             "timestamp": doc.get("time"),
             "permalink": doc.get("permalink"),
-            "score": doc.get("score")
+            "upvote" : doc.get("upvote")
             #"text": doc.get("body")
         })
         if count == 10:
@@ -105,7 +107,7 @@ def retrieve(storedir, query):
     return topkdocs
 
 
-#index('input/', 'index')
+#index('input/', 'indexNew')
 lucene.initVM(vmargs=['-Djava.awt.headless=true'])
-retrieve('index', 'gaming')
-
+print(retrieve('indexNew', 'programming'))
+#index('input', 'index')

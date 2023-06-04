@@ -1,0 +1,123 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="This website is a reddit search engin." />
+    <meta name="keywords" content="seach, engin, reddit, posts, tags, query" />
+    <meta name="author" content="Ali Parva" />
+    <meta name="robots" content="noindex,nofollow" />
+    <style>
+      .defaultItems {
+        font-family: Arial, Helvetica, sans-serif;
+        padding-top: 10px;
+        font-size: 2.5vw;
+      }
+      .defaultItems p {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 2.5vw;
+      }
+      h1 {
+        font-family: "Lucida Handwriting", "Lucida Sans Regular",
+          "Lucida Grande", "Lucida Sans Unicode", Geneva, Verdana, cursive;
+        color: white;
+      }
+      #searchBar {
+        align-self: center;
+        width: 70%;
+        height: 10%;
+        margin: 10%;
+        padding: 1px;
+        font: inherit;
+        border: none;
+      }
+
+      #SearchBox {
+        width: 80%;
+        height: 100%;
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+        margin: 0px;
+        padding: 0px;
+        background-color: white;
+      }
+      body {
+        background-image: url("https://media.istockphoto.com/id/1294603953/vector/abstract-black-stripes-diagonal-background.jpg?s=612x612&w=0&k=20&c=nQZHTk-o97cNVqWnUe8BJg0A5jQG0tqylquzbt9YtcQ=");
+      }
+
+      .post_items {
+        color: white;
+      }
+
+      .checkboxLabels {
+        padding: 20px;
+        line-height: 50px;
+        font-size: 2.5vw;
+        color: white;
+      }
+      #SearchButton {
+        width: 19%;
+        height: 100%;
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+        border-color: rgb(6, 0, 47);
+        margin: 0;
+        padding: 0%;
+        color: white;
+        background-color: rgb(15, 0, 112);
+      }
+
+      .checkbox {
+        transform: scale(2.5);
+      }
+    </style>
+    <title>CS172-Group12</title>
+  </head>
+  <body>
+    <h1>Reddit Search Engine</h1>
+    <br />
+    <form method="post" action="{% url 'form-submit'%}">
+      {% csrf_token %}
+      <div id="searchBar" class="defaultItems">
+        <input
+          name="query"
+          type="text"
+          placeholder="Search your Keywords"
+          name="SearchBox"
+          id="SearchBox"
+          class="defaultItems"
+        />
+        <input
+          type="submit"
+          value="Search"
+          id="SearchButton"
+          class="defaultItems"
+        /><br />
+        <p class="checkboxLabels">
+          Order by
+          <input type="checkbox" name="Upvote" value="1" class="checkbox" />
+          <label for="Upvote" class="checkboxLabels">upvotes ratio</label>
+          <input type="checkbox" name="date" value="1" class="checkbox" />
+          <label for="date" class="checkboxLabels"> date</label>
+
+          <input type="checkbox" name="relevance" value="1" class="checkbox" />
+          <label for="relevance" class="checkboxLabels">relevance</label>
+        </p>
+      </div>
+    </form>
+    {% for link in posts %}
+    <blockquote
+      class="reddit-embed-bq"
+      style="height: 500px"
+      data-embed-height="398"
+    >
+      <a href="{{link}}"></a><br />
+    </blockquote>
+    <script
+      async=""
+      src="https://embed.reddit.com/widgets.js"
+      charset="UTF-8"
+    ></script>
+    {% endfor %}
+  </body>
+</html>
+
