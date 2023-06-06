@@ -99,15 +99,8 @@ def retrieve(storedir, query):
         if count == 10:
             break
 
-    #print (topkdocs)
-    #print('Top 10 Documents: ')
-    #for i in range(len(topkdocs)):
-        #position = i + 1
-        #print(str(position) + ') ' + str(topkdocs[i]))
     return topkdocs
 
 
-#index('input/', 'indexNew')
-lucene.initVM(vmargs=['-Djava.awt.headless=true'])
+index('input/', 'indexNew')
 print(retrieve('indexNew', 'programming'))
-#index('input', 'index')
